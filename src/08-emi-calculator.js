@@ -53,8 +53,7 @@ export function calculateEMI(principal, monthlyRate, emi) {
   }
 
   // Infinite loop protection
-  const firstMonthInterest = principal * monthlyRate;
-  if (emi <= firstMonthInterest) {
+  if (emi <= principal * monthlyRate) {
     return { months: -1, totalPaid: -1, totalInterest: -1 };
   }
 
@@ -64,22 +63,23 @@ export function calculateEMI(principal, monthlyRate, emi) {
 
   while (remaining > 0) {
 
-    // Calculate interest
+    // 1️⃣ Calculate interest
     const interest = remaining * monthlyRate;
 
-    // Add interest
-    remaining = remaining + interest;
+    // 2️⃣ Add interest
+    remaining += interest;
 
-    months++;
-
-    // Last month case
+    // 3️⃣ Last month case
     if (remaining <= emi) {
       totalPaid += remaining;
       remaining = 0;
     } else {
-      remaining = remaining - emi;
+      remaining -= emi;
       totalPaid += emi;
     }
+
+    // 4️⃣ Increment months
+    months++;
   }
 
   const totalInterest = totalPaid - principal;
